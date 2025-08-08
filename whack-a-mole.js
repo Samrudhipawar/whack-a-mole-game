@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     const holes = document.querySelectorAll('.hole');
     const moles = document.querySelectorAll('.mole');
     const scoreDisplay = document.getElementById('score');
     const timeDisplay = document.getElementById('time');
     const startButton = document.getElementById('start-button');
+    const pauseButton = document.getElementById('pause-button'); // Added for pause feature
     const soundToggle = document.getElementById('sound-toggle');
     const gameOverTag = document.getElementById('game-over-tag');
     const scorePopup = document.getElementById('score-popup');
@@ -20,15 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let highScore = localStorage.getItem('highScore') || 0;
     highScoreDisplay.textContent = highScore;
 
-  
+ 
     let score = 0;
     let timeLeft = 30;
     let gameTimer;
     let moleTimer;
     let isPlaying = false;
-    let currentLevel = 'easy'; 
+    let isPaused = false; // Added for pause feature
+    let currentLevel = 'easy';
     
-   
+    
     const levelConfig = {
         easy: {
             timeLimit: 30,
@@ -62,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
     backgroundMusic.loop = false;
     backgroundMusic.volume = 0.5;
     
+    pauseButton.disabled = true; // Added for pause feature
+
     // Initialize theme
     const savedTheme = localStorage.getItem('gameTheme') || 'classic';
     document.body.setAttribute('data-theme', savedTheme);
@@ -88,16 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const levelName = levelConfig[currentLevel].label;
         startButton.innerHTML = `<i class="fas fa-play"></i> Start Game (${levelName})`;
     });
-   
+    
     function initGame() {
         score = 0;
         timeLeft = levelConfig[currentLevel].timeLimit;
         isPlaying = true;
+        isPaused = false; // Added for pause feature
         
         // Update UI
         scoreDisplay.textContent = score;
         timeDisplay.textContent = timeLeft;
         startButton.disabled = true;
+        pauseButton.disabled = false; // Added for pause feature
+        pauseButton.innerHTML = '<i class="fas fa-pause"></i> Pause'; // Added for pause feature
         gameOverTag.style.display = 'none';
         scorePopup.style.display = 'none';
         
@@ -149,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         // Check if game is still playing
-        if (!isPlaying) return;
+        if (!isPlaying || isPaused) return; // Modified for pause feature
         
         // Get random hole
         const randomHole = Math.floor(Math.random() * holes.length);
@@ -174,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(gameTimer);
         clearTimeout(moleTimer);
         isPlaying = false;
+        pauseButton.disabled = true; // Added for pause feature
         
         // Hide all moles
         moles.forEach(mole => {
@@ -218,6 +226,44 @@ document.addEventListener('DOMContentLoaded', () => {
     
    
     startButton.addEventListener('click', initGame);
+    
+    // --- Entire block added for pause feature ---
+    pauseButton.addEventListener('click', () => {
+        if (!isPlaying) return;
+
+        isPaused = !isPaused;
+
+        if (isPaused) {
+            // Pause the game
+            clearInterval(gameTimer);
+            clearTimeout(moleTimer);
+            backgroundMusic.pause();
+            pauseButton.innerHTML = '<i class="fas fa-play"></i> Resume';
+        } else {
+            // Resume the game
+            pauseButton.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            if (soundToggle.checked) {
+                backgroundMusic.play().catch(error => console.log("Audio play failed:", error));
+            }
+
+            const soundEnabled = soundToggle.checked;
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                if (timeLeft === 1 && soundEnabled) {
+                    gameOverSound.currentTime = 0;
+                    gameOverSound.load();
+                }
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            showMole();
+        }
+    });
+    // --- End of pause feature block ---
+
     const restartButton = document.getElementById('restart-button');
     restartButton.addEventListener('click', function () {
         if (isPlaying) {
@@ -239,11 +285,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Start new game with current level
         initGame();
     });
- 
+
     
 moles.forEach(mole => {
     mole.addEventListener('click', function() {
-        if (!isPlaying) return;
+        if (!isPlaying || isPaused) return; // Modified for pause feature
         
         if (mole.classList.contains('active') && !mole.classList.contains('whacked')) {
            
@@ -281,7 +327,7 @@ moles.forEach(mole => {
         backgroundMusic.volume = soundEnabled ? 0.5 : 0;
         
         
-        if (isPlaying && soundEnabled && backgroundMusic.paused) {
+        if (isPlaying && !isPaused && soundEnabled && backgroundMusic.paused) { // Modified for pause feature
             backgroundMusic.play().catch(error => {
                 console.log("Audio play failed:", error);
             });
@@ -309,6 +355,6 @@ themeToggleBtn.addEventListener('click', () => {
     ? '<i class="fas fa-sun"></i> Toggle Light Mode'
     : '<i class="fas fa-moon"></i> Toggle Dark Mode';
 
-  //  choice
+  //  choice
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });

@@ -11,22 +11,25 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
   font-family: monospace;
+  margin: 0;
+  padding: 0;
+  /* Remove flexbox centering */
 }
 
+
 .game-container {
-  text-align: center;
+  margin: 0 auto;
+  margin-top: 20px;
+  max-width: 600px;
   background-color: cornsilk;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  max-width: 600px;
-  width: 100%;
+  text-align: center;
 }
+
 
 h1 {
   font-family: monospace;
@@ -303,11 +306,33 @@ body.dark-mode .theme-dropdown option {
   color: #ffffff;
 }
 
+/* Navbar container: flex, align items center, space between */
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 16px;
+}
+
+/* Navbar menu: flex */
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+}
+
+/* Theme controls container: flex align center and gap */
+.theme-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Theme toggle button */
 .theme-toggle-btn {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  z-index: 30;
   padding: 8px 14px;
   background: #222;
   color: #fff;
@@ -316,19 +341,17 @@ body.dark-mode .theme-dropdown option {
   cursor: pointer;
   font-size: 1.05rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  transition: all .2s;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
+
 .theme-toggle-btn:hover {
   background: #434343;
   color: #ffee58;
 }
 
-/* Theme Selector Styles */
+/* Theme selector styles */
 .theme-selector {
-  position: absolute;
-  top: 12px;
-  right: 200px;
-  z-index: 30;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -339,6 +362,7 @@ body.dark-mode .theme-dropdown option {
   font-size: 0.9rem;
   font-weight: bold;
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  white-space: nowrap;
 }
 
 .theme-dropdown {
@@ -366,6 +390,43 @@ body.dark-mode .theme-dropdown option {
   border-color: #ffa726;
   box-shadow: 0 0 0 2px rgba(255, 167, 38, 0.3);
 }
+
+/* Adjust navbar background and height */
+.navbar {
+  background: #035f08;
+  height: 60px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: white;
+  padding: 10px;
+
+
+}
+
+/* Navbar logo */
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Navbar links */
+.navbar-menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.navbar-menu a.active,
+.navbar-menu a:hover {
+  background: #283593;
+}
+
+
+
 
 /* Theme Variations */
 /* Classic Garden Theme (Default) */
